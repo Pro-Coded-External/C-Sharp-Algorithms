@@ -1,46 +1,70 @@
-﻿/***
- * Euclidean Algorithm to find the greatest common divisor of two numbers.
- * 
- */
-
+﻿using System;
 
 namespace Algorithms.Numeric
 {
     public static class GreatestCommonDivisor
     {
         /// <summary>
-        /// Finds and returns the greatest common divisor of two numbers
+        ///     Returns the greatest common divisor of two numbers using Euclidean Algorithm.
         /// </summary>
-        public static uint FindGCD(uint a, uint b)
+        public static int FindGCDEuclidean(int a, int b)
         {
+            int t = 0;
+
+            a = Math.Abs(a);
+            b = Math.Abs(b);
+
             if (a == 0)
                 return b;
             if (b == 0)
                 return a;
 
-            uint _a = a, _b = b;
-            
-            //Bitwise operator '&' works on individual bits of each value
-            //result is 0 or 1
-            //it works like a modulus operator '%' but is more efficient
-            uint r = _a & _b;
-
-            while(r != 0)
-            {
-                _a = _b;
-                _b = r;
-                r = _a & _b;
+            while (a % b != 0) {
+                t = b;
+                b = a % b;
+                a = t;
             }
-
-            return _b;
+            return b;
         }
 
         /// <summary>
-        /// Determines given two numbers are relatively prime
+        ///     Returns the greatest common divisor of two numbers using Stein Algorithm.
         /// </summary>
-        public static bool IsRelativelyPrime(uint a, uint b)
+        public static int FindGCDStein(int a, int b)
         {
-            return FindGCD(a, b) == 1;
+            a = Math.Abs(a);
+            b = Math.Abs(b);
+
+            return Stein(a, b);
+        }
+
+        private static int Stein(int a, int b)
+        {
+            if (a == 0)
+                return b;
+            if (b == 0)
+                return a;
+            if (a == b)
+                return a;
+
+            if ((~a & 1) == 1)
+            {
+                if ((b & 1) == 1)
+                {
+                    return Stein(a >> 1, b);
+                }
+                else
+                {
+                    return Stein(a >> 1, b >> 1) << 1;
+                }
+            }
+
+            if ((~b & 1) == 1)
+            {
+                return Stein(a, b >> 1);
+            }
+
+            return a > b ? Stein((a - b) >> 1, b) : Stein(a, (b - a) >> 1);
         }
     }
 }
